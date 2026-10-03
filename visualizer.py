@@ -156,14 +156,36 @@ except FileNotFoundError as e:
     version_comparison = pd.DataFrame(get_correlations(df_v10, "log4j-1.0"))
 
 # ---------------------------------------------------------
-# Step 3: Project Generalization (e.g., Tomcat)
+# Step 3: Project Generalization (Tomcat)
 # ---------------------------------------------------------
 try:
     df_tomcat = pd.read_csv("tomcat.csv")
-    s_tomcat = get_correlations(df_tomcat, "tomcat")
+    s_tomcat = get_correlations(df_tomcat, "Tomcat")
+    
     project_comparison = pd.concat([version_comparison, s_tomcat], axis=1)
-    print("\nCross-Project Comparison with Tomcat:")
-    print(project_comparison)
-    print("Tomcat analyzed")
+    print("\nCross-Project Comparison with Tomcat (Spearman rho):")
+    print(project_comparison.round(3))
+    
+    # Generate Cross-Project Comparison Bar Chart
+    plt.figure(figsize=(14, 5.5))
+    ax = project_comparison.plot(
+        kind='bar', 
+        figsize=(14, 5.5), 
+        colormap='tab10', 
+        width=0.8, 
+        edgecolor='black', 
+        linewidth=0.5
+    )
+    plt.title("Cross-Project Metric Correlation Comparison: Log4j vs. Tomcat", fontsize=13)
+    plt.xlabel("Object-Oriented Metric", fontsize=11)
+    plt.ylabel("Spearman Correlation (rho)", fontsize=11)
+    plt.axhline(0, color="black", linestyle="--", linewidth=0.8)
+    plt.grid(axis="y", linestyle=":", alpha=0.6)
+    plt.legend(title="Dataset")
+    plt.tight_layout()
+    plt.savefig("cross_project_generalization_bar.png", dpi=300)
+    plt.close()
+    
+    print("Generated cross_project_generalization_bar.png successfully.")
 except FileNotFoundError:
-    print("\nNote: Place 'tomcat.csv' in the folder to compute cross-project generalization.")
+    print("\nNote: 'tomcat.csv' not found in working directory.")
